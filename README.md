@@ -89,4 +89,3 @@ go test ./tests -v
 ## 👨‍💻 Author
 
 Built by [@Diony-source](https://github.com/Diony-source) — passionate backend developer in training.  
-This project is part of a 30+ day backend mastery roadmap in Go.
