@@ -20,6 +20,9 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "People"
+                ],
                 "summary": "List all people",
                 "responses": {
                     "200": {
@@ -30,6 +33,18 @@ const docTemplate = `{
                                 "$ref": "#/definitions/models.Person"
                             }
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
                     }
                 }
             },
@@ -39,6 +54,9 @@ const docTemplate = `{
                 ],
                 "produces": [
                     "text/plain"
+                ],
+                "tags": [
+                    "People"
                 ],
                 "summary": "Add a new person",
                 "parameters": [
@@ -60,7 +78,60 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid",
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/people/age": {
+            "get": {
+                "tags": [
+                    "People"
+                ],
+                "summary": "Get people by age range",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Minimum age",
+                        "name": "min",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Maximum age",
+                        "name": "max",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Person"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "type": "string"
                         }
@@ -91,12 +162,27 @@ const docTemplate = `{
                                 "$ref": "#/definitions/models.Person"
                             }
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
                     }
                 }
             }
         },
         "/people/search": {
             "get": {
+                "tags": [
+                    "People"
+                ],
                 "summary": "Search people by name",
                 "parameters": [
                     {
@@ -116,12 +202,27 @@ const docTemplate = `{
                                 "$ref": "#/definitions/models.Person"
                             }
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
                     }
                 }
             }
         },
         "/people/stats": {
             "get": {
+                "tags": [
+                    "People"
+                ],
                 "summary": "Get total number of people",
                 "responses": {
                     "200": {
@@ -132,12 +233,27 @@ const docTemplate = `{
                                 "type": "integer"
                             }
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
                     }
                 }
             }
         },
         "/people/{id}": {
             "get": {
+                "tags": [
+                    "People"
+                ],
                 "summary": "Get person by ID",
                 "parameters": [
                     {
@@ -155,8 +271,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/models.Person"
                         }
                     },
-                    "404": {
-                        "description": "Not Found",
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "type": "string"
                         }
@@ -164,6 +286,9 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "tags": [
+                    "People"
+                ],
                 "summary": "Delete person by ID",
                 "parameters": [
                     {
@@ -180,12 +305,27 @@ const docTemplate = `{
                         "schema": {
                             "type": "string"
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
                     }
                 }
             },
             "patch": {
                 "consumes": [
                     "application/json"
+                ],
+                "tags": [
+                    "People"
                 ],
                 "summary": "Update person fields",
                 "parameters": [
@@ -209,6 +349,18 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "type": "string"
                         }

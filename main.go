@@ -41,7 +41,7 @@ func main() {
 		case http.MethodPatch:
 			handlers.PatchPersonHandler(w, r)
 		case http.MethodGet:
-			handlers.GetPersonByIDHandler(w, r)
+			handlers.GetPeopleByIDHandler(w, r)
 		default:
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}

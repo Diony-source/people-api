@@ -21,8 +21,11 @@ type updatePersonRequest struct {
 
 // GetPeopleHandler godoc
 // @Summary List all people
+// @Tags People
 // @Produce json
 // @Success 200 {array} models.Person
+// @Failure 400 {string} string "Bad Request"
+// @Failure 500 {string} string "Internal Server Error"
 // @Router /people [get]
 func GetPeopleHandler(w http.ResponseWriter, r *http.Request) {
 	people, err := repository.GetAllPeople()
@@ -36,11 +39,13 @@ func GetPeopleHandler(w http.ResponseWriter, r *http.Request) {
 
 // PostPersonHandler godoc
 // @Summary Add a new person
+// @Tags People
 // @Accept json
 // @Produce plain
 // @Param person body createPersonRequest true "Person JSON"
 // @Success 201 {string} string "Created"
-// @Failure 400 {string} string "Invalid"
+// @Failure 400 {string} string "Bad Request"
+// @Failure 500 {string} string "Internal Server Error"
 // @Router /people [post]
 func PostPersonHandler(w http.ResponseWriter, r *http.Request) {
 	var req createPersonRequest
@@ -57,8 +62,11 @@ func PostPersonHandler(w http.ResponseWriter, r *http.Request) {
 
 // DeletePersonHandler godoc
 // @Summary Delete person by ID
+// @Tags People
 // @Param id path int true "Person ID"
 // @Success 204 {string} string "No Content"
+// @Failure 400 {string} string "Bad Request"
+// @Failure 500 {string} string "Internal Server Error"
 // @Router /people/{id} [delete]
 func DeletePersonHandler(w http.ResponseWriter, r *http.Request) {
 	idStr := strings.TrimPrefix(r.URL.Path, "/people/")
@@ -76,10 +84,13 @@ func DeletePersonHandler(w http.ResponseWriter, r *http.Request) {
 
 // PatchPersonHandler godoc
 // @Summary Update person fields
+// @Tags People
 // @Accept json
 // @Param id path int true "Person ID"
 // @Param update body updatePersonRequest true "Updated fields"
 // @Success 200 {string} string "OK"
+// @Failure 400 {string} string "Bad Request"
+// @Failure 500 {string} string "Internal Server Error"
 // @Router /people/{id} [patch]
 func PatchPersonHandler(w http.ResponseWriter, r *http.Request) {
 	idStr := strings.TrimPrefix(r.URL.Path, "/people/")
@@ -102,8 +113,11 @@ func PatchPersonHandler(w http.ResponseWriter, r *http.Request) {
 
 // SearchPeopleHandler godoc
 // @Summary Search people by name
+// @Tags People
 // @Param name query string true "Name keyword"
 // @Success 200 {array} models.Person
+// @Failure 400 {string} string "Bad Request"
+// @Failure 500 {string} string "Internal Server Error"
 // @Router /people/search [get]
 func SearchPeopleHandler(w http.ResponseWriter, r *http.Request) {
 	name := r.URL.Query().Get("name")
@@ -121,7 +135,10 @@ func SearchPeopleHandler(w http.ResponseWriter, r *http.Request) {
 
 // StatsHandler godoc
 // @Summary Get total number of people
+// @Tags People
 // @Success 200 {object} map[string]int
+// @Failure 400 {string} string "Bad Request"
+// @Failure 500 {string} string "Internal Server Error"
 // @Router /people/stats [get]
 func StatsHandler(w http.ResponseWriter, r *http.Request) {
 	count, err := repository.CountPeople()
@@ -134,11 +151,13 @@ func StatsHandler(w http.ResponseWriter, r *http.Request) {
 
 // GetPersonByIDHandler godoc
 // @Summary Get person by ID
+// @Tags People
 // @Param id path int true "Person ID"
 // @Success 200 {object} models.Person
-// @Failure 404 {string} string "Not Found"
+// @Failure 400 {string} string "Invalid ID"
+// @Failure 404 {string} string "Not found"
 // @Router /people/{id} [get]
-func GetPersonByIDHandler(w http.ResponseWriter, r *http.Request) {
+func GetPeopleByIDHandler(w http.ResponseWriter, r *http.Request) {
 	idStr := strings.TrimPrefix(r.URL.Path, "/people/")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
@@ -150,10 +169,18 @@ func GetPersonByIDHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Person not found", http.StatusNotFound)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(person)
 }
 
+// GetPeopleByAgeRangeHandler godoc
+// @Summary Get people by age range
+// @Tags People
+// @Param min query int true "Minimum age"
+// @Param max query int true "Maximum age"
+// @Success 200 {array} models.Person
+// @Failure 400 {string} string "Bad Request"
+// @Failure 500 {string} string "Internal Server Error"
+// @Router /people/age [get]
 func GetPeopleByAgeRangeHandler(w http.ResponseWriter, r *http.Request) {
 	min, _ := strconv.Atoi(r.URL.Query().Get("min"))
 	max, _ := strconv.Atoi(r.URL.Query().Get("max"))
@@ -171,6 +198,8 @@ func GetPeopleByAgeRangeHandler(w http.ResponseWriter, r *http.Request) {
 // @Tags People
 // @Param limit query int false "Limit number of people"
 // @Success 200 {array} models.Person
+// @Failure 400 {string} string "Bad Request"
+// @Failure 500 {string} string "Internal Server Error"
 // @Router /people/recent [get]
 func GetRecentPeopleHandler(w http.ResponseWriter, r *http.Request) {
 	limit, err := strconv.Atoi(r.URL.Query().Get("limit"))
