@@ -68,12 +68,12 @@ func GetPeopleByID(id int) (models.Person, error) {
 
 func GetPeopleByAgeRange(minAge, maxAge int) ([]models.Person, error) {
 	var people []models.Person
-	err := utils.DB.Get(&people, "SELECT * FROM people WHERE age BETWEEN $1 AND $2", minAge, maxAge)
+	err := utils.DB.Select(&people, "SELECT * FROM people WHERE age BETWEEN $1 AND $2", minAge, maxAge)
 	return people, err
 }
 
 func GetRecentPeople(limit int) ([]models.Person, error) {
 	var people []models.Person
-	err := utils.DB.Get(&people, "SELECT * FROM people ORDER BY created_at DESC LIMIT $1", limit)
+	err := utils.DB.Select(&people, "SELECT * FROM people ORDER BY created_at DESC LIMIT $1", limit)
 	return people, err
 }
