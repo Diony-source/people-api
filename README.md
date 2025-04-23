@@ -53,6 +53,12 @@ peoplehub-api/
 | GET    | /people/search     | Search by name          |
 | GET    | /people/stats      | Show total count        |
 
+## 📄 API Documentation
+
+You can explore and test all endpoints with Swagger UI:
+
+🔗 [http://localhost:8080/swagger/index.html](http://localhost:8080/swagger/index.html)
+
 ## 📚 Setup & Run
 
 1. Clone the repo  
