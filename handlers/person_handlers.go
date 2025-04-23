@@ -19,6 +19,11 @@ type updatePersonRequest struct {
 	Age  *int    `json:"age"`
 }
 
+// GetPeopleHandler godoc
+// @Summary List all people
+// @Produce json
+// @Success 200 {array} models.Person
+// @Router /people [get]
 func GetPeopleHandler(w http.ResponseWriter, r *http.Request) {
 	people, err := repository.GetAllPeople()
 	if err != nil {
@@ -29,6 +34,14 @@ func GetPeopleHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(people)
 }
 
+// PostPersonHandler godoc
+// @Summary Add a new person
+// @Accept json
+// @Produce plain
+// @Param person body createPersonRequest true "Person JSON"
+// @Success 201 {string} string "Created"
+// @Failure 400 {string} string "Invalid"
+// @Router /people [post]
 func PostPersonHandler(w http.ResponseWriter, r *http.Request) {
 	var req createPersonRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil || req.Name == "" || req.Age <= 0 {
@@ -42,6 +55,11 @@ func PostPersonHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 }
 
+// DeletePersonHandler godoc
+// @Summary Delete person by ID
+// @Param id path int true "Person ID"
+// @Success 204 {string} string "No Content"
+// @Router /people/{id} [delete]
 func DeletePersonHandler(w http.ResponseWriter, r *http.Request) {
 	idStr := strings.TrimPrefix(r.URL.Path, "/people/")
 	id, err := strconv.Atoi(idStr)
@@ -56,6 +74,13 @@ func DeletePersonHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
+// PatchPersonHandler godoc
+// @Summary Update person fields
+// @Accept json
+// @Param id path int true "Person ID"
+// @Param update body updatePersonRequest true "Updated fields"
+// @Success 200 {string} string "OK"
+// @Router /people/{id} [patch]
 func PatchPersonHandler(w http.ResponseWriter, r *http.Request) {
 	idStr := strings.TrimPrefix(r.URL.Path, "/people/")
 	id, err := strconv.Atoi(idStr)
@@ -75,6 +100,11 @@ func PatchPersonHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+// SearchPeopleHandler godoc
+// @Summary Search people by name
+// @Param name query string true "Name keyword"
+// @Success 200 {array} models.Person
+// @Router /people/search [get]
 func SearchPeopleHandler(w http.ResponseWriter, r *http.Request) {
 	name := r.URL.Query().Get("name")
 	if name == "" {
@@ -89,6 +119,10 @@ func SearchPeopleHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(people)
 }
 
+// StatsHandler godoc
+// @Summary Get total number of people
+// @Success 200 {object} map[string]int
+// @Router /people/stats [get]
 func StatsHandler(w http.ResponseWriter, r *http.Request) {
 	count, err := repository.CountPeople()
 	if err != nil {
