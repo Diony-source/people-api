@@ -44,14 +44,17 @@ peoplehub-api/
 
 ## 🚀 Endpoints
 
-| Method | Route              | Description             |
-|--------|--------------------|-------------------------|
-| GET    | /people            | List all people         |
-| POST   | /people            | Add new person          |
-| DELETE | /people/{id}       | Delete person by ID     |
-| PATCH  | /people/{id}       | Update person fields    |
-| GET    | /people/search     | Search by name          |
-| GET    | /people/stats      | Show total count        |
+| Method | Route              | Description                  |
+|--------|--------------------|------------------------------|
+| GET    | /people            | List all people              |
+| POST   | /people            | Add new person               |
+| DELETE | /people/{id}       | Delete person by ID          |
+| PATCH  | /people/{id}       | Update person fields         |
+| GET    | /people/search     | Search by name               |
+| GET    | /people/stats      | Show total count             |
+| GET    | /people/{id}       | Get person by ID             |
+| GET    | /people/age        | Get people by age range      |
+| GET    | /people/recent     | Get most recent people       |
 
 ## 📄 API Documentation
 
