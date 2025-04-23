@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/Diony-source/peoplehub-api/handlers"
@@ -106,5 +107,49 @@ func TestPatchAndDeletePerson(t *testing.T) {
 
 	if deleteRes.Code != http.StatusNoContent {
 		t.Errorf("DELETE failed, got %d", deleteRes.Code)
+	}
+}
+
+func TestPostPersonValidation(t *testing.T) {
+	body := `{"name":"", "age":25}`
+	req, _ := http.NewRequest("POST", "/people", strings.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
+	rr := httptest.NewRecorder()
+
+	handler := http.HandlerFunc(handlers.PostPersonHandler)
+	handler.ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusBadRequest {
+		t.Errorf("expected 400 BadRequest for empty name, got %v", rr.Code)
+	}
+
+	body = `{"name":"John", "age":0}`
+	req, _ = http.NewRequest("POST", "/people", strings.NewReader(body))
+	rr = httptest.NewRecorder()
+	handler.ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusBadRequest {
+		t.Errorf("expected 400 BadRequest for invalid age, got %v", rr.Code)
+	}
+}
+
+func TestGetPersonByID(t *testing.T) {
+	// Geçerli ID (örnek: 1)
+	req, _ := http.NewRequest("GET", "/people/1", nil)
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(handlers.GetPeopleByIDHandler)
+	handler.ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusOK && rr.Code != http.StatusNotFound {
+		t.Errorf("expected 200 OK or 404 Not Found, got %v", rr.Code)
+	}
+
+	// Geçersiz ID
+	req, _ = http.NewRequest("GET", "/people/99999", nil)
+	rr = httptest.NewRecorder()
+	handler.ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusNotFound {
+		t.Errorf("expected 404 Not Found for invalid ID, got %v", rr.Code)
 	}
 }
