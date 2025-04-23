@@ -1,5 +1,5 @@
 // @title PeopleHub API
-//@version 1.0
+// @version 1.0
 // @description RESTful API for managing people
 // @host localhost:8080
 // @BasePath /
@@ -21,6 +21,7 @@ func main() {
 	godotenv.Load()
 	utils.InitDB()
 
+	// Basic CRUD
 	http.HandleFunc("/people", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
@@ -32,19 +33,27 @@ func main() {
 		}
 	})
 
+	// GET /people/{id} - also PATCH/DELETE
 	http.HandleFunc("/people/", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodDelete:
 			handlers.DeletePersonHandler(w, r)
 		case http.MethodPatch:
 			handlers.PatchPersonHandler(w, r)
+		case http.MethodGet:
+			handlers.GetPersonByIDHandler(w, r)
 		default:
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}
 	})
 
+	// Extra filtering
+	http.HandleFunc("/people/age", handlers.GetPeopleByAgeRangeHandler)
+	http.HandleFunc("/people/recent", handlers.GetRecentPeopleHandler)
 	http.HandleFunc("/people/search", handlers.SearchPeopleHandler)
 	http.HandleFunc("/people/stats", handlers.StatsHandler)
+
+	// Swagger
 	http.HandleFunc("/swagger/", httpSwagger.WrapHandler)
 
 	log.Println("🚀 Server started at http://localhost:8080")

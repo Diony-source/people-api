@@ -59,3 +59,21 @@ func CountPeople() (int, error) {
 	err := utils.DB.Get(&count, "SELECT COUNT(*) FROM people")
 	return count, err
 }
+
+func GetPeopleByID(id int) (models.Person, error) {
+	var person models.Person
+	err := utils.DB.Get(&person, "SELECT * FROM people WHERE id = $1", id)
+	return person, err
+}
+
+func GetPeopleByAgeRange(minAge, maxAge int) ([]models.Person, error) {
+	var people []models.Person
+	err := utils.DB.Get(&people, "SELECT * FROM people WHERE age BETWEEN $1 AND $2", minAge, maxAge)
+	return people, err
+}
+
+func GetRecentPeople(limit int) ([]models.Person, error) {
+	var people []models.Person
+	err := utils.DB.Get(&people, "SELECT * FROM people ORDER BY created_at DESC LIMIT $1", limit)
+	return people, err
+}

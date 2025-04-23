@@ -131,3 +131,56 @@ func StatsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	json.NewEncoder(w).Encode(map[string]int{"total": count})
 }
+
+// GetPersonByIDHandler godoc
+// @Summary Get person by ID
+// @Param id path int true "Person ID"
+// @Success 200 {object} models.Person
+// @Failure 404 {string} string "Not Found"
+// @Router /people/{id} [get]
+func GetPersonByIDHandler(w http.ResponseWriter, r *http.Request) {
+	idStr := strings.TrimPrefix(r.URL.Path, "/people/")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		return
+	}
+	person, err := repository.GetPeopleByID(id)
+	if err != nil {
+		http.Error(w, "Person not found", http.StatusNotFound)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(person)
+}
+
+func GetPeopleByAgeRangeHandler(w http.ResponseWriter, r *http.Request) {
+	min, _ := strconv.Atoi(r.URL.Query().Get("min"))
+	max, _ := strconv.Atoi(r.URL.Query().Get("max"))
+
+	people, err := repository.GetPeopleByAgeRange(min, max)
+	if err != nil {
+		http.Error(w, "Error fetching people", http.StatusInternalServerError)
+		return
+	}
+	json.NewEncoder(w).Encode(people)
+}
+
+// GetRecentPeopleHandler godoc
+// @Summary Get recent people
+// @Tags People
+// @Param limit query int false "Limit number of people"
+// @Success 200 {array} models.Person
+// @Router /people/recent [get]
+func GetRecentPeopleHandler(w http.ResponseWriter, r *http.Request) {
+	limit, err := strconv.Atoi(r.URL.Query().Get("limit"))
+	if err != nil || limit <= 0 {
+		limit = 5
+	}
+	people, err := repository.GetRecentPeople(limit)
+	if err != nil {
+		http.Error(w, "Error fetching data", http.StatusInternalServerError)
+		return
+	}
+	json.NewEncoder(w).Encode(people)
+}
