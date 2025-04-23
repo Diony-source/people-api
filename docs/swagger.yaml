@@ -80,6 +80,23 @@ paths:
           schema:
             type: string
       summary: Delete person by ID
+    get:
+      parameters:
+      - description: Person ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Person'
+        "404":
+          description: Not Found
+          schema:
+            type: string
+      summary: Get person by ID
     patch:
       consumes:
       - application/json
@@ -101,6 +118,23 @@ paths:
           schema:
             type: string
       summary: Update person fields
+  /people/recent:
+    get:
+      parameters:
+      - description: Limit number of people
+        in: query
+        name: limit
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Person'
+            type: array
+      summary: Get recent people
+      tags:
+      - People
   /people/search:
     get:
       parameters:

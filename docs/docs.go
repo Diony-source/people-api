@@ -68,6 +68,33 @@ const docTemplate = `{
                 }
             }
         },
+        "/people/recent": {
+            "get": {
+                "tags": [
+                    "People"
+                ],
+                "summary": "Get recent people",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Limit number of people",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Person"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/people/search": {
             "get": {
                 "summary": "Search people by name",
@@ -110,6 +137,32 @@ const docTemplate = `{
             }
         },
         "/people/{id}": {
+            "get": {
+                "summary": "Get person by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Person ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Person"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
             "delete": {
                 "summary": "Delete person by ID",
                 "parameters": [
