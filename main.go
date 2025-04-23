@@ -1,8 +1,3 @@
-// @title PeopleHub API
-// @version 1.0
-// @description RESTful API for managing people
-// @host localhost:8080
-// @BasePath /
 package main
 
 import (
@@ -20,9 +15,10 @@ import (
 func main() {
 	godotenv.Load()
 	utils.InitDB()
+	utils.InitLogger() // ✅ log.txt sistemi başlat
 
-	// Basic CRUD
 	http.HandleFunc("/people", func(w http.ResponseWriter, r *http.Request) {
+		utils.Logger.Println("🔄 /people endpoint hit")
 		switch r.Method {
 		case http.MethodGet:
 			handlers.GetPeopleHandler(w, r)
@@ -33,8 +29,8 @@ func main() {
 		}
 	})
 
-	// GET /people/{id} - also PATCH/DELETE
 	http.HandleFunc("/people/", func(w http.ResponseWriter, r *http.Request) {
+		utils.Logger.Println("📌 /people/{id} endpoint hit")
 		switch r.Method {
 		case http.MethodDelete:
 			handlers.DeletePersonHandler(w, r)
@@ -47,15 +43,12 @@ func main() {
 		}
 	})
 
-	// Extra filtering
-	http.HandleFunc("/people/age", handlers.GetPeopleByAgeRangeHandler)
-	http.HandleFunc("/people/recent", handlers.GetRecentPeopleHandler)
 	http.HandleFunc("/people/search", handlers.SearchPeopleHandler)
 	http.HandleFunc("/people/stats", handlers.StatsHandler)
-
-	// Swagger
+	http.HandleFunc("/people/age", handlers.GetPeopleByAgeRangeHandler)
+	http.HandleFunc("/people/recent", handlers.GetRecentPeopleHandler)
 	http.HandleFunc("/swagger/", httpSwagger.WrapHandler)
 
-	log.Println("🚀 Server started at http://localhost:8080")
+	utils.Logger.Println("🚀 Server started at http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
