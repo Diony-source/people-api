@@ -52,3 +52,20 @@ func GetPersonByID(id int) (models.Person, error) {
 	}
 	return repo.GetPeopleByID(id)
 }
+
+func SearchPeopleByName(name string) ([]models.Person, error) {
+	return repository.SearchPeopleByName(name)
+}
+
+func CountPeople() (int, error) {
+	return repository.CountPeople()
+}
+
+func GetPeopleByAgeRange(minAge, maxAge int) ([]models.Person, error) {
+	return repository.GetPeopleByAgeRange(minAge, maxAge)
+}
+
+func GetRecentPeople(limit int) ([]models.Person, error) {
+	return repository.GetRecentPeople(limit)
+}
+

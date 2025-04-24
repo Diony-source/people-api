@@ -60,3 +60,21 @@ func TestGetPersonByID_NotFound(t *testing.T) {
 		t.Error("expected error for not found")
 	}
 }
+
+func TestUpdatePerson_InvalidName(t *testing.T) {
+	InjectRepository(mockRepo{})
+	empty := ""
+	err := UpdatePerson(1, &empty, nil)
+	if err != ErrInvalidName {
+		t.Errorf("expected ErrInvalidName, got %v", err)
+	}
+}
+
+func TestUpdatePerson_InvalidAge(t *testing.T) {
+	InjectRepository(mockRepo{})
+	age := -10
+	err := UpdatePerson(1, nil, &age)
+	if err != ErrInvalidAge {
+		t.Errorf("expected ErrInvalidAge, got %v", err)
+	}
+}

@@ -90,7 +90,7 @@ func SearchPeopleHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Missing name param", http.StatusBadRequest)
 		return
 	}
-	people, err := repository.SearchPeopleByName(name)
+	people, err := service.SearchPeopleByName(name)
 	if err != nil {
 		http.Error(w, "Search failed", http.StatusInternalServerError)
 		return
@@ -126,7 +126,7 @@ func GetPeopleByAgeRangeHandler(w http.ResponseWriter, r *http.Request) {
 	min, _ := strconv.Atoi(r.URL.Query().Get("min"))
 	max, _ := strconv.Atoi(r.URL.Query().Get("max"))
 
-	people, err := repository.GetPeopleByAgeRange(min, max)
+	people, err := service.GetPeopleByAgeRange(min, max)
 	if err != nil {
 		http.Error(w, "Error fetching people", http.StatusInternalServerError)
 		return
@@ -139,7 +139,7 @@ func GetRecentPeopleHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil || limit <= 0 {
 		limit = 5
 	}
-	people, err := repository.GetRecentPeople(limit)
+	people, err := service.GetRecentPeople(limit)
 	if err != nil {
 		http.Error(w, "Error fetching data", http.StatusInternalServerError)
 		return
