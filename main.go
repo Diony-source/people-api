@@ -7,9 +7,6 @@ import (
 	"github.com/Diony-source/peoplehub-api/handlers"
 	"github.com/Diony-source/peoplehub-api/utils"
 	"github.com/joho/godotenv"
-
-	_ "github.com/Diony-source/peoplehub-api/docs"
-	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 func main() {
@@ -47,7 +44,6 @@ func main() {
 	http.HandleFunc("/people/stats", handlers.StatsHandler)
 	http.HandleFunc("/people/age", handlers.GetPeopleByAgeRangeHandler)
 	http.HandleFunc("/people/recent", handlers.GetRecentPeopleHandler)
-	http.HandleFunc("/swagger/", httpSwagger.WrapHandler)
 
 	utils.Logger.Println("🚀 Server started at http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
