@@ -7,6 +7,12 @@ import (
 	"github.com/Diony-source/peoplehub-api/utils"
 )
 
+type PersonRepository interface {
+	InsertPerson(name string, age int) error
+	UpdatePerson(id int, name *string, age *int) error
+	GetPeopleByID(id int) (models.Person, error)
+}
+
 func InsertPerson(name string, age int) error {
 	_, err := utils.DB.Exec("INSERT INTO people (name, age) VALUES ($1, $2)", name, age)
 	return err

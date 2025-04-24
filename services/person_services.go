@@ -9,11 +9,16 @@ import (
 )
 
 var (
+	repo repository.PersonRepository
+
 	ErrInvalidName = errors.New("name must not be empty")
 	ErrInvalidAge  = errors.New("age must be between 1 and 150")
 )
 
-// InsertPerson validates input and delegates to repository
+func InjectRepository(r repository.PersonRepository) {
+	repo = r
+}
+
 func InsertPerson(name string, age int) error {
 	name = strings.TrimSpace(name)
 	if name == "" {
@@ -22,10 +27,9 @@ func InsertPerson(name string, age int) error {
 	if age <= 0 || age > 150 {
 		return ErrInvalidAge
 	}
-	return repository.InsertPerson(name, age)
+	return repo.InsertPerson(name, age)
 }
 
-// UpdatePerson validates optional fields and updates the person
 func UpdatePerson(id int, name *string, age *int) error {
 	if name != nil {
 		trimmed := strings.TrimSpace(*name)
@@ -39,12 +43,12 @@ func UpdatePerson(id int, name *string, age *int) error {
 			return ErrInvalidAge
 		}
 	}
-	return repository.UpdatePerson(id, name, age)
+	return repo.UpdatePerson(id, name, age)
 }
 
 func GetPersonByID(id int) (models.Person, error) {
 	if id <= 0 {
 		return models.Person{}, errors.New("invalid id")
 	}
-	return repository.GetPeopleByID(id)
+	return repo.GetPeopleByID(id)
 }
