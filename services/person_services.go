@@ -69,3 +69,10 @@ func GetRecentPeople(limit int) ([]models.Person, error) {
 	return repository.GetRecentPeople(limit)
 }
 
+func GetAllPeople() ([]models.Person, error) {
+	return repository.GetAllPeople()
+}
+
+func DeletePerson(id int) error {
+	return repository.DeletePerson(id)
+}
