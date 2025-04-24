@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/Diony-source/peoplehub-api/repository"
+	"github.com/Diony-source/peoplehub-api/services"
 )
 
 type createPersonRequest struct {
@@ -31,12 +32,16 @@ func GetPeopleHandler(w http.ResponseWriter, r *http.Request) {
 
 func PostPersonHandler(w http.ResponseWriter, r *http.Request) {
 	var req createPersonRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil || req.Name == "" || req.Age <= 0 {
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
-	if err := repository.InsertPerson(req.Name, req.Age); err != nil {
-		http.Error(w, "Failed to insert person", http.StatusInternalServerError)
+	if err := service.InsertPerson(req.Name, req.Age); err != nil {
+		if err == service.ErrInvalidName || err == service.ErrInvalidAge {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+		} else {
+			http.Error(w, "Failed to insert person", http.StatusInternalServerError)
+		}
 		return
 	}
 	w.WriteHeader(http.StatusCreated)
@@ -68,8 +73,12 @@ func PatchPersonHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid body", http.StatusBadRequest)
 		return
 	}
-	if err := repository.UpdatePerson(id, req.Name, req.Age); err != nil {
-		http.Error(w, "Update failed", http.StatusInternalServerError)
+	if err := service.UpdatePerson(id, req.Name, req.Age); err != nil {
+		if err == service.ErrInvalidName || err == service.ErrInvalidAge {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+		} else {
+			http.Error(w, "Update failed", http.StatusInternalServerError)
+		}
 		return
 	}
 	w.WriteHeader(http.StatusOK)
@@ -101,11 +110,11 @@ func StatsHandler(w http.ResponseWriter, r *http.Request) {
 func GetPeopleByIDHandler(w http.ResponseWriter, r *http.Request) {
 	idStr := strings.TrimPrefix(r.URL.Path, "/people/")
 	id, err := strconv.Atoi(idStr)
-	if err != nil {
+	if err != nil || id <= 0 {
 		http.Error(w, "Invalid ID", http.StatusBadRequest)
 		return
 	}
-	person, err := repository.GetPeopleByID(id)
+	person, err := service.GetPersonByID(id)
 	if err != nil {
 		http.Error(w, "Person not found", http.StatusNotFound)
 		return
