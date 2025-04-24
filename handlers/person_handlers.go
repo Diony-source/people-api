@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/Diony-source/peoplehub-api/repository"
 	"github.com/Diony-source/peoplehub-api/services"
+	"github.com/Diony-source/peoplehub-api/utils"
 )
 
 type createPersonRequest struct {
@@ -21,105 +21,96 @@ type updatePersonRequest struct {
 }
 
 func GetPeopleHandler(w http.ResponseWriter, r *http.Request) {
-	people, err := repository.GetAllPeople()
+	people, err := service.GetAllPeople()
 	if err != nil {
-		http.Error(w, "Error fetching people", http.StatusInternalServerError)
+		utils.Error(w, http.StatusInternalServerError, "Error fetching people", err)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(people)
+	utils.JSON(w, http.StatusOK, people)
 }
 
 func PostPersonHandler(w http.ResponseWriter, r *http.Request) {
 	var req createPersonRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		utils.Error(w, http.StatusBadRequest, "Invalid request body", err)
 		return
 	}
 	if err := service.InsertPerson(req.Name, req.Age); err != nil {
-		if err == service.ErrInvalidName || err == service.ErrInvalidAge {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-		} else {
-			http.Error(w, "Failed to insert person", http.StatusInternalServerError)
-		}
+		utils.Error(w, http.StatusBadRequest, "Invalid input", err)
 		return
 	}
-	w.WriteHeader(http.StatusCreated)
+	utils.JSON(w, http.StatusCreated, map[string]string{"message": "Person created"})
 }
 
 func DeletePersonHandler(w http.ResponseWriter, r *http.Request) {
 	idStr := strings.TrimPrefix(r.URL.Path, "/people/")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		utils.Error(w, http.StatusBadRequest, "Invalid ID", err)
 		return
 	}
-	if err := repository.DeletePerson(id); err != nil {
-		http.Error(w, "Delete failed", http.StatusInternalServerError)
+	if err := service.DeletePerson(id); err != nil {
+		utils.Error(w, http.StatusInternalServerError, "Delete failed", err)
 		return
 	}
-	w.WriteHeader(http.StatusNoContent)
+	utils.JSON(w, http.StatusNoContent, nil)
 }
 
 func PatchPersonHandler(w http.ResponseWriter, r *http.Request) {
 	idStr := strings.TrimPrefix(r.URL.Path, "/people/")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		utils.Error(w, http.StatusBadRequest, "Invalid ID", err)
 		return
 	}
 	var req updatePersonRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "Invalid body", http.StatusBadRequest)
+		utils.Error(w, http.StatusBadRequest, "Invalid body", err)
 		return
 	}
 	if err := service.UpdatePerson(id, req.Name, req.Age); err != nil {
-		if err == service.ErrInvalidName || err == service.ErrInvalidAge {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-		} else {
-			http.Error(w, "Update failed", http.StatusInternalServerError)
-		}
+		utils.Error(w, http.StatusBadRequest, "Update failed", err)
 		return
 	}
-	w.WriteHeader(http.StatusOK)
-}
-
-func SearchPeopleHandler(w http.ResponseWriter, r *http.Request) {
-	name := r.URL.Query().Get("name")
-	if name == "" {
-		http.Error(w, "Missing name param", http.StatusBadRequest)
-		return
-	}
-	people, err := service.SearchPeopleByName(name)
-	if err != nil {
-		http.Error(w, "Search failed", http.StatusInternalServerError)
-		return
-	}
-	json.NewEncoder(w).Encode(people)
-}
-
-func StatsHandler(w http.ResponseWriter, r *http.Request) {
-	count, err := repository.CountPeople()
-	if err != nil {
-		http.Error(w, "Stats failed", http.StatusInternalServerError)
-		return
-	}
-	json.NewEncoder(w).Encode(map[string]int{"total": count})
+	utils.JSON(w, http.StatusOK, map[string]string{"message": "Person updated"})
 }
 
 func GetPeopleByIDHandler(w http.ResponseWriter, r *http.Request) {
 	idStr := strings.TrimPrefix(r.URL.Path, "/people/")
 	id, err := strconv.Atoi(idStr)
-	if err != nil || id <= 0 {
-		http.Error(w, "Invalid ID", http.StatusBadRequest)
+	if err != nil {
+		utils.Error(w, http.StatusBadRequest, "Invalid ID", err)
 		return
 	}
 	person, err := service.GetPersonByID(id)
 	if err != nil {
-		http.Error(w, "Person not found", http.StatusNotFound)
+		utils.Error(w, http.StatusNotFound, "Person not found", err)
 		return
 	}
-	json.NewEncoder(w).Encode(person)
+	utils.JSON(w, http.StatusOK, person)
+}
+
+func SearchPeopleHandler(w http.ResponseWriter, r *http.Request) {
+	name := r.URL.Query().Get("name")
+	if name == "" {
+		utils.Error(w, http.StatusBadRequest, "Missing name param", nil)
+		return
+	}
+	people, err := service.SearchPeopleByName(name)
+	if err != nil {
+		utils.Error(w, http.StatusInternalServerError, "Search failed", err)
+		return
+	}
+	utils.JSON(w, http.StatusOK, people)
+}
+
+func StatsHandler(w http.ResponseWriter, r *http.Request) {
+	count, err := service.CountPeople()
+	if err != nil {
+		utils.Error(w, http.StatusInternalServerError, "Stats failed", err)
+		return
+	}
+	utils.JSON(w, http.StatusOK, map[string]int{"total": count})
 }
 
 func GetPeopleByAgeRangeHandler(w http.ResponseWriter, r *http.Request) {
@@ -128,10 +119,10 @@ func GetPeopleByAgeRangeHandler(w http.ResponseWriter, r *http.Request) {
 
 	people, err := service.GetPeopleByAgeRange(min, max)
 	if err != nil {
-		http.Error(w, "Error fetching people", http.StatusInternalServerError)
+		utils.Error(w, http.StatusInternalServerError, "Error fetching people", err)
 		return
 	}
-	json.NewEncoder(w).Encode(people)
+	utils.JSON(w, http.StatusOK, people)
 }
 
 func GetRecentPeopleHandler(w http.ResponseWriter, r *http.Request) {
@@ -141,8 +132,8 @@ func GetRecentPeopleHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	people, err := service.GetRecentPeople(limit)
 	if err != nil {
-		http.Error(w, "Error fetching data", http.StatusInternalServerError)
+		utils.Error(w, http.StatusInternalServerError, "Error fetching data", err)
 		return
 	}
-	json.NewEncoder(w).Encode(people)
+	utils.JSON(w, http.StatusOK, people)
 }
