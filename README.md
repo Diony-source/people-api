@@ -1,4 +1,4 @@
-# PeopleHub API
+# People API
 
 A production-ready RESTful API built in Go for managing people records using PostgreSQL and Clean Architecture principles.
 
